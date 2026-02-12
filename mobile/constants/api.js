@@ -1,0 +1,1 @@
+export const API_URL = "https://expense-wallet-m6v8.onrender.com/api";
