@@ -1,6 +1,6 @@
 // constants/colors.js
 const coffeeTheme = {
-  primary: "#8B593E",
+  primary: "#8f4b27",
   background: "#FFF8F3",
   text: "#4A3428",
   border: "#E5D3B7",
@@ -58,5 +58,5 @@ export const THEMES = {
   ocean: oceanTheme,
 };
 
-// 👇 change this to switch theme
+//  change this to switch theme
 export const COLORS = THEMES.coffee;

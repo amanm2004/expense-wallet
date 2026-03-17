@@ -92,3 +92,80 @@ export async function getSummaryByUserId(req,res) {
       }
     }
 
+export async function getWeeklySummaryByUserId(req, res) {
+  try {
+    const { userId } = req.params;
+
+    const incomeResult = await sql`
+      SELECT COALESCE(SUM(amount), 0) as income 
+      FROM transactions
+      WHERE user_id = ${userId} 
+        AND amount > 0 
+        AND created_at >= NOW() - INTERVAL '7 days'
+    `;
+
+    const expensesResult = await sql`
+      SELECT COALESCE(SUM(amount), 0) as expenses 
+      FROM transactions
+      WHERE user_id = ${userId} 
+        AND amount < 0 
+        AND created_at >= NOW() - INTERVAL '7 days'
+    `;
+
+    const byCategory = await sql`
+      SELECT category, COALESCE(SUM(amount), 0) as total
+      FROM transactions
+      WHERE user_id = ${userId} 
+        AND created_at >= NOW() - INTERVAL '7 days'
+      GROUP BY category
+    `;
+
+    res.status(200).json({
+      income: incomeResult[0].income,
+      expenses: expensesResult[0].expenses,
+      byCategory,
+    });
+  } catch (error) {
+    console.log("Error getting weekly summary", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function getMonthlySummaryByUserId(req, res) {
+  try {
+    const { userId } = req.params;
+
+    const incomeResult = await sql`
+      SELECT COALESCE(SUM(amount), 0) as income 
+      FROM transactions
+      WHERE user_id = ${userId} 
+        AND amount > 0 
+        AND created_at >= DATE_TRUNC('month', NOW())
+    `;
+
+    const expensesResult = await sql`
+      SELECT COALESCE(SUM(amount), 0) as expenses 
+      FROM transactions
+      WHERE user_id = ${userId} 
+        AND amount < 0 
+        AND created_at >= DATE_TRUNC('month', NOW())
+    `;
+
+    const byCategory = await sql`
+      SELECT category, COALESCE(SUM(amount), 0) as total
+      FROM transactions
+      WHERE user_id = ${userId} 
+        AND created_at >= DATE_TRUNC('month', NOW())
+      GROUP BY category
+    `;
+
+    res.status(200).json({
+      income: incomeResult[0].income,
+      expenses: expensesResult[0].expenses,
+      byCategory,
+    });
+  } catch (error) {
+    console.log("Error getting monthly summary", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

@@ -251,7 +251,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 15,
     paddingBottom: 5,
   },
   transactionsList: {
